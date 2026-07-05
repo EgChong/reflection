@@ -112,6 +112,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.55}
 .kb{margin-left:auto;display:flex;gap:6px}
 .kb button{border-radius:13px;padding:7px 12px;font-family:'Baloo 2';font-weight:700;font-size:13px;background:var(--bg2);color:var(--ink-soft);border:2px solid transparent}
 .kb button.kept.sel{background:#E3F8EC;color:#1F7A54;border-color:var(--mint-deep)}
+.kb button.mid.sel{background:#FFF4D6;color:#9A7B00;border-color:#EBD186}
 .kb button.miss.sel{background:#FDEDE8;color:#D65A48;border-color:#EDA491}
 .val-note{margin-top:10px}
 .seg{display:flex;background:var(--bg2);border-radius:16px;padding:4px;margin-bottom:14px}
@@ -260,8 +261,8 @@ function cpStatus(cp,date){
   if(date!==todayStr()) return {key:done?'done':'past',label:done?'Done ✔':'Passed',checked,total,done};
   const diff=toMin(cp.time)-nowMin();
   if(done) return {key:'done',label:'Done ✔',checked,total,done};
-  if(Math.abs(diff)<=30) return {key:'now',label:'Check now!',checked,total,done};
-  if(diff>30) return {key:'soon',label:'Coming up',checked,total,done};
+  if(Math.abs(diff)<=90) return {key:'now',label:'Check now!',checked,total,done};
+  if(diff>90) return {key:'soon',label:'Coming up',checked,total,done};
   return {key:'past',label:'Passed',checked,total,done};
 }
 
@@ -295,7 +296,7 @@ function renderToday(){
     html+=`<div class="card cp ${st.key==='now'?'now-glow':''}">
       <div class="cp-head">
         <div class="cp-emoji">${esc(cp.emoji)}</div>
-        <div><div class="cp-title">${esc(cp.name)}</div><div class="cp-time">🕐 ${esc(cp.time)} · check-in window ±30 min</div></div>
+        <div><div class="cp-title">${esc(cp.name)}</div><div class="cp-time">🕐 ${esc(cp.time)} · check-in window ±1.5 h</div></div>
         <span class="badge ${st.key}">${st.label}</span>
       </div>
       <div class="divider"></div>
@@ -333,11 +334,12 @@ function renderEval(){
     html+=`<div class="val-card">
       <div class="val-top"><span style="font-size:20px">${esc(v.emoji)}</span><span class="val-name">${esc(v.text)}</span>
         <div class="kb">
-          <button class="kept ${e.kept===true?'sel':''}" data-act="kept" data-val="${v.id}" data-v="1">😊 Kept it</button>
+          <button class="kept ${e.kept===true?'sel':''}" data-act="kept" data-val="${v.id}" data-v="1">😊 Kept</button>
+          <button class="mid ${e.kept==='mid'?'sel':''}" data-act="kept" data-val="${v.id}" data-v="m">😐 So-so</button>
           <button class="miss ${e.kept===false?'sel':''}" data-act="kept" data-val="${v.id}" data-v="0">😅 Missed</button>
         </div>
       </div>
-      ${e.kept===false?`<div class="val-note"><textarea data-act="note" data-val="${v.id}" placeholder="What happened? How did it slip? What could I try next time?">${esc(e.note||'')}</textarea></div>`:''}
+      ${(e.kept===false||e.kept==='mid')?`<div class="val-note"><textarea data-act="note" data-val="${v.id}" placeholder="What happened? How did it slip? What could I try next time?">${esc(e.note||'')}</textarea></div>`:''}
     </div>`;
   });
   html+=`<hr class="dot"><div class="sec-title" style="margin-top:0">📝 One-line diary</div>
@@ -382,7 +384,7 @@ function renderDayDetail(ds,g){
     evalEntries.forEach(([vid,e])=>{
       const v=(g?g.values:[]).find(x=>x.id===vid);
       const name=v?v.emoji+' '+v.text:'(deleted value)';
-      out+=`${esc(name)} — ${e.kept?'😊 kept':'😅 missed'}${e.kept===false&&e.note?'<br><span class="muted">↳ '+esc(e.note)+'</span>':''}<br>`;
+      out+=`${esc(name)} — ${e.kept===true?'😊 kept':(e.kept==='mid'?'😐 so-so':'😅 missed')}${e.note?'<br><span class="muted">↳ '+esc(e.note)+'</span>':''}<br>`;
     });
   } else out+='<span class="muted">No reflection saved</span><br>';
   if(l.diary) out+=`<br><b class="disp">📝 Diary</b><br>${esc(l.diary)}`;
@@ -417,7 +419,7 @@ function renderSettings(){
     <div class="muted small" style="margin-bottom:8px">On your other device: Setup → Sync → paste this code → Connect.</div>
     <button class="btn btn-danger" style="width:100%" data-act="syncOff">Turn off sync on this device</button>`;
   }else{
-    html+=`<div class="muted small" style="margin-bottom:10px">${sync.status==='error'?'<span style=\"color:#D65A48\">● Connection problem — check internet and reconnect.</span><br>':''}Link your phone and laptop so records stay identical on both. First device: create a code. Other device: paste that same code.</div>
+    html+=`<div class="muted small" style="margin-bottom:10px">${sync.status==='error'?'<span style=\\"color:#D65A48\\">● Connection problem — check internet and reconnect.</span><br>':''}Link your phone and laptop so records stay identical on both. First device: create a code. Other device: paste that same code.</div>
     <button class="btn btn-primary" style="width:100%;margin-bottom:8px" data-act="syncNew">Turn on sync (create new code)</button>
     <div class="row">
       <input id="syncCodeIn" placeholder="paste code from other device">
@@ -671,8 +673,8 @@ document.getElementById('main').addEventListener('click',e=>{
   else if(act==='kept'){
     const l=log(view.evalDate);
     const cur=l.eval[el.dataset.val]||{};
-    cur.kept=el.dataset.v==='1';
-    if(cur.kept) cur.note='';
+    cur.kept=el.dataset.v==='1'?true:(el.dataset.v==='m'?'mid':false);
+    if(cur.kept===true) cur.note='';
     l.eval[el.dataset.val]=cur; save(); render();
   }
   else if(act==='saveEval'){ save(); toast('🍀 Reflection saved — good job today!'); }
@@ -748,7 +750,7 @@ document.getElementById('main').addEventListener('input',e=>{
   const el=e.target.closest('[data-act]'); if(!el) return;
   const act=el.dataset.act;
   const g=el.dataset.g?state.groups.find(x=>x.id===el.dataset.g):null;
-  if(act==='note'){ const l=log(view.evalDate); const cur=l.eval[el.dataset.val]||{kept:false}; cur.note=el.value; l.eval[el.dataset.val]=cur; save(); }
+  if(act==='note'){ const l=log(view.evalDate); const cur=l.eval[el.dataset.val]||{kept:'mid'}; cur.note=el.value; l.eval[el.dataset.val]=cur; save(); }
   else if(act==='diary'){ log(view.evalDate).diary=el.value; save(); }
   else if(act==='gName'){ g.name=el.value; save(); }
   else if(act==='gEmoji'){ g.emoji=el.value; save(); }
