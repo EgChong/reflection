@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="Bloom">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23F5F7FA'/><text x='50' y='72' font-size='60' text-anchor='middle'>🌿</text></svg>">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -193,7 +195,7 @@ const store={
   }
 };
 let saveTimer=null;
-function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>store.set(state),400); }
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ state.updatedAt=Date.now(); store.set(state); schedulePush(); },400); }
 
 /* ================= helpers ================= */
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -404,6 +406,25 @@ function renderSettings(){
     </div>`;
   });
   html+=`<button class="btn btn-primary" style="width:100%" data-act="addGroup">+ New schedule group</button>
+  <div class="sec-title">🔗 Sync between devices</div>
+  <div class="card">`;
+  if(sync.status==='on'){
+    html+=`<div class="muted small" style="margin-bottom:8px"><span style="color:var(--mint-deep)">● Connected</span> — changes flow to every device using this code. Keep the code private!</div>
+    <div class="row" style="margin-bottom:8px">
+      <input readonly value="${esc(sync.code)}" style="font-size:13px" id="syncCodeShow">
+      <button class="btn btn-soft" data-act="syncCopy">Copy</button>
+    </div>
+    <div class="muted small" style="margin-bottom:8px">On your other device: Setup → Sync → paste this code → Connect.</div>
+    <button class="btn btn-danger" style="width:100%" data-act="syncOff">Turn off sync on this device</button>`;
+  }else{
+    html+=`<div class="muted small" style="margin-bottom:10px">${sync.status==='error'?'<span style=\"color:#D65A48\">● Connection problem — check internet and reconnect.</span><br>':''}Link your phone and laptop so records stay identical on both. First device: create a code. Other device: paste that same code.</div>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" data-act="syncNew">Turn on sync (create new code)</button>
+    <div class="row">
+      <input id="syncCodeIn" placeholder="paste code from other device">
+      <button class="btn btn-mint" data-act="syncJoin">Connect</button>
+    </div>`;
+  }
+  html+=`</div>
   <div class="sec-title">💾 Backup</div>
   <div class="card">
     <div class="muted small" style="margin-bottom:10px">Save your setup & records as a file. If the app is ever deleted or updated, restore everything with one import.</div>
@@ -476,6 +497,91 @@ function render(){
   else html=renderSettings();
   main.innerHTML=html;
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('sel',b.dataset.tab===view.tab));
+}
+
+/* ================= sync (Firebase) ================= */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyBCPAy8JrtM1VEUA_Iubzk1SpPL3U0dfiI",
+  authDomain:"bloom-16a6a.firebaseapp.com",
+  databaseURL:"https://bloom-16a6a-default-rtdb.firebaseio.com",
+  projectId:"bloom-16a6a",
+  storageBucket:"bloom-16a6a.firebasestorage.app",
+  messagingSenderId:"110943036324",
+  appId:"1:110943036324:web:477bf62bcd718ff585d731"
+};
+const SYNC_KEY='bloom:sync:code';
+const sync={ code:null, ref:null, myId:uid()+uid(), status:'off' }; // off | on | error
+let pushTimer=null;
+
+function fbReady(){ return typeof firebase!=='undefined' && firebase.initializeApp; }
+function fbInit(){ if(!fbReady()) return false; if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); return true; }
+function makeCode(){
+  const chars='abcdefghjkmnpqrstuvwxyz23456789'; let s='';
+  const a=new Uint8Array(20); crypto.getRandomValues(a);
+  a.forEach(n=>s+=chars[n%chars.length]);
+  return 'bloom-'+s;
+}
+function schedulePush(){
+  if(sync.status!=='on'||!sync.ref) return;
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(()=>{
+    sync.ref.set({ s:JSON.stringify(state), t:state.updatedAt||Date.now(), by:sync.myId })
+      .catch(()=>{ sync.status='error'; });
+  },800);
+}
+function startListen(){
+  if(!sync.ref) return;
+  sync.ref.on('value',snap=>{
+    const v=snap.val();
+    if(!v||v.by===sync.myId) return;
+    if((v.t||0)>(state.updatedAt||0)){
+      try{
+        const remote=JSON.parse(v.s);
+        if(remote&&Array.isArray(remote.groups)){
+          state=remote;
+          if(!state.groups.find(g=>g.id===state.activeGroup)) state.activeGroup=state.groups[0].id;
+          store.set(state);
+          if(!document.querySelector('#modalRoot .modal')) render();
+          toast('Synced from another device ⤵');
+        }
+      }catch(e){}
+    }
+  },()=>{ sync.status='error'; if(view.tab==='settings') render(); });
+}
+async function connectSync(code,isNew){
+  if(!fbInit()){ toast('Sync needs internet — try again online'); return; }
+  try{
+    if(sync.ref) sync.ref.off();
+    sync.code=code;
+    sync.ref=firebase.database().ref('rooms/'+code);
+    if(!isNew){
+      const snap=await sync.ref.get();
+      const v=snap.val();
+      if(v&&(v.t||0)>(state.updatedAt||0)){
+        try{
+          const remote=JSON.parse(v.s);
+          if(remote&&Array.isArray(remote.groups)){
+            state=remote;
+            if(!state.groups.find(g=>g.id===state.activeGroup)) state.activeGroup=state.groups[0].id;
+            await store.set(state);
+          }
+        }catch(e){}
+      }
+    }
+    sync.status='on';
+    try{ localStorage.setItem(SYNC_KEY,code); }catch(e){}
+    state.updatedAt=Date.now();
+    await sync.ref.set({ s:JSON.stringify(state), t:state.updatedAt, by:'init-'+sync.myId });
+    startListen();
+    render();
+    toast(isNew?'Sync is on! Code created 🔗':'Connected! Devices are linked 🔗');
+  }catch(e){ sync.status='error'; render(); toast('Could not connect — check internet'); }
+}
+function disconnectSync(){
+  if(sync.ref) sync.ref.off();
+  sync.ref=null; sync.code=null; sync.status='off';
+  try{ localStorage.removeItem(SYNC_KEY); }catch(e){}
+  render(); toast('Sync turned off (data stays on this device)');
 }
 
 /* ================= backup ================= */
@@ -573,6 +679,18 @@ document.getElementById('main').addEventListener('click',e=>{
   else if(act==='exportAll'){ doExport(true); }
   else if(act==='exportSettings'){ doExport(false); }
   else if(act==='importOpen'){ doImportOpen(); }
+  else if(act==='syncNew'){ connectSync(makeCode(),true); }
+  else if(act==='syncJoin'){
+    const inp=document.getElementById('syncCodeIn');
+    const code=(inp?inp.value:'').trim();
+    if(!code){ toast('Paste the code from your other device first!'); return; }
+    connectSync(code,false);
+  }
+  else if(act==='syncCopy'){
+    const v=sync.code||'';
+    (async()=>{ try{ await navigator.clipboard.writeText(v); }catch(e){ const s=document.getElementById('syncCodeShow'); if(s){ s.focus(); s.select(); try{ document.execCommand('copy'); }catch(_){} } } toast('Code copied 📋'); })();
+  }
+  else if(act==='syncOff'){ if(confirm('Turn off sync on this device? Your data stays here, it just stops updating other devices.')) disconnectSync(); }
   else if(act==='openDay'){ view.openHistory=(view.openHistory===el.dataset.date)?null:el.dataset.date; render(); }
   else if(act==='useGroup'){ state.activeGroup=el.dataset.g; save(); render(); toast('Schedule switched ✅'); }
   else if(act==='editGroup'){ view.editingGroup=el.dataset.g; render(); }
@@ -665,6 +783,10 @@ setInterval(()=>{ tickClock(); if(view.tab==='today') render(); },60000);
   await store.set(state);
   tickClock();
   render();
+  try{
+    const savedCode=localStorage.getItem(SYNC_KEY);
+    if(savedCode) connectSync(savedCode,false);
+  }catch(e){}
 })();
 </script>
 </body>
