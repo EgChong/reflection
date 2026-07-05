@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bloom 🌿 my daily check-up</title>
+<meta name="theme-color" content="#F5F7FA">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bloom">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23F5F7FA'/><text x='50' y='72' font-size='60' text-anchor='middle'>🌿</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FA;
+  --bg2:#EBF0F7;
+  --paper:#FFFFFF;
+  --ink:#3D4757;
+  --ink-soft:#95A1B5;
+  --pink:#AFC0F0;
+  --pink-deep:#6C7FE0;
+  --peach:#FFD9B8;
+  --butter:#FFE29A;
+  --mint:#BFE8D2;
+  --mint-deep:#45B389;
+  --lav:#D9D3F8;
+  --lav-deep:#8C7FE0;
+  --line:#E4EAF2;
+  --shadow:0 8px 20px rgba(100,120,160,.12);
+  --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Quicksand',-apple-system,'Apple SD Gothic Neo',sans-serif;
+  background:
+    radial-gradient(circle at 12% 6%, #FFF8E4 0, transparent 24%),
+    radial-gradient(circle at 90% 14%, #E8ECFB 0, transparent 28%),
+    radial-gradient(circle at 50% 100%, #E5F4EC 0, transparent 30%),
+    var(--bg);
+  color:var(--ink);
+  display:flex;justify-content:center;
+  min-height:100dvh;
+}
+.phone{width:100%;max-width:440px;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+h1,h2,h3,.disp{font-family:'Baloo 2','Quicksand',sans-serif;font-weight:700;letter-spacing:.2px}
+
+/* ---------- header ---------- */
+header{padding:22px 20px 8px}
+.head-row{display:flex;align-items:flex-end;justify-content:space-between}
+header h1{font-size:27px}
+header h1 .buddy{display:inline-block;animation:bounce 2.8s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(6deg)}}
+.clock{font-family:'Baloo 2';font-weight:700;font-size:17px;color:var(--pink-deep);background:var(--paper);border-radius:16px;padding:6px 13px;box-shadow:var(--shadow)}
+.sub{margin-top:2px;color:var(--ink-soft);font-size:13px;font-weight:600}
+
+/* ---------- layout ---------- */
+main{flex:1;padding:12px 16px 96px;overflow-y:auto}
+.card{background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;position:relative}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:700;color:var(--pink-deep)}
+.muted{color:var(--ink-soft);font-size:13px;font-weight:600}
+.small{font-size:12px}
+button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:9px 12px;background:#FFFBFC;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--lav-deep)}
+textarea{resize:vertical;min-height:70px;line-height:1.55}
+.btn{border-radius:16px;padding:10px 16px;font-family:'Baloo 2';font-weight:700;font-size:15px;transition:transform .1s}
+.btn:active{transform:scale(.95)}
+.btn-primary{background:var(--pink-deep);color:#fff}
+.btn-soft{background:var(--bg2);color:var(--pink-deep)}
+.btn-danger{background:#FFE1DC;color:#E2604C}
+.btn-mint{background:var(--mint-deep);color:#fff}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1}
+
+/* ---------- checkpoint card ---------- */
+.cp{padding:0;overflow:hidden;border:2px solid transparent}
+.cp.now-glow{border-color:var(--pink)}
+.cp-head{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+.cp-emoji{font-size:25px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:16px;flex-shrink:0}
+.cp-title{font-family:'Baloo 2';font-weight:700;font-size:17px}
+.cp-time{font-size:12.5px;color:var(--ink-soft);font-weight:600}
+.badge{margin-left:auto;font-family:'Baloo 2';font-weight:700;font-size:12px;border-radius:999px;padding:5px 12px;flex-shrink:0}
+.badge.now{background:var(--pink-deep);color:#fff;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(247,122,155,.5)}60%{box-shadow:0 0 0 9px rgba(247,122,155,0)}}
+.badge.soon{background:var(--butter);color:#9A7B00}
+.badge.past{background:var(--line);color:var(--ink-soft)}
+.badge.done{background:var(--mint);color:#1F7A54}
+.divider{border-top:2px dotted var(--line);margin:0 16px}
+.cp-body{padding:10px 16px 16px}
+.item{display:flex;align-items:center;gap:11px;padding:9px 6px;border-radius:14px;cursor:pointer;transition:background .15s}
+.item:active{background:var(--bg2)}
+.box{width:25px;height:25px;border-radius:9px;border:2.5px solid var(--pink);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;transition:all .15s;background:#fff}
+.item.on .box{background:var(--mint-deep);border-color:var(--mint-deep)}
+.item .txt{font-size:14.5px;line-height:1.4;font-weight:600}
+.item.on .txt{color:var(--ink-soft);text-decoration:line-through}
+.meter{height:9px;background:var(--bg2);border-radius:99px;margin-top:10px;position:relative}
+.meter .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--butter),var(--pink-deep));width:0;transition:width .3s}
+.meter .walker{position:absolute;top:-10px;font-size:15px;left:0;transition:left .3s;transform:translateX(-50%)}
+.stamp{position:absolute;right:16px;bottom:38px;border:3px solid var(--mint-deep);color:var(--mint-deep);font-family:'Baloo 2';font-weight:700;border-radius:14px;padding:4px 11px;font-size:14px;transform:rotate(-10deg);background:rgba(255,255,255,.75);animation:stampIn .35s cubic-bezier(.2,1.6,.5,1)}
+@keyframes stampIn{0%{transform:rotate(-10deg) scale(2.2);opacity:0}100%{transform:rotate(-10deg) scale(1);opacity:1}}
+
+/* ---------- eval ---------- */
+.val-card{border-radius:18px;border:2px solid var(--line);padding:12px;margin-bottom:10px}
+.val-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.val-name{font-family:'Baloo 2';font-weight:700;font-size:15px}
+.kb{margin-left:auto;display:flex;gap:6px}
+.kb button{border-radius:13px;padding:7px 12px;font-family:'Baloo 2';font-weight:700;font-size:13px;background:var(--bg2);color:var(--ink-soft);border:2px solid transparent}
+.kb button.kept.sel{background:#E3F8EC;color:#1F7A54;border-color:var(--mint-deep)}
+.kb button.miss.sel{background:#FDEDE8;color:#D65A48;border-color:#EDA491}
+.val-note{margin-top:10px}
+.seg{display:flex;background:var(--bg2);border-radius:16px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;border-radius:13px;padding:8px;font-family:'Baloo 2';font-weight:700;font-size:13.5px;color:var(--ink-soft)}
+.seg button.sel{background:var(--paper);color:var(--pink-deep);box-shadow:var(--shadow)}
+
+/* ---------- history ---------- */
+.day-row{display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:2px dotted var(--line);cursor:pointer}
+.day-row:last-child{border-bottom:none}
+.mini-bar{flex:1;height:9px;background:var(--bg2);border-radius:99px;overflow:hidden}
+.mini-bar i{display:block;height:100%;background:var(--mint-deep)}
+.detail{background:var(--bg2);border-radius:16px;padding:12px;margin:4px 0 10px;font-size:13.5px;line-height:1.65;font-weight:600}
+
+/* ---------- settings ---------- */
+.group-card{display:flex;align-items:center;gap:12px}
+.g-emoji{font-size:24px;width:48px;height:48px;background:var(--bg2);border-radius:16px;display:flex;align-items:center;justify-content:center}
+.radio{width:23px;height:23px;border-radius:50%;border:3px solid var(--line);flex-shrink:0}
+.radio.on{border-color:var(--pink-deep);background:radial-gradient(circle,var(--pink-deep) 42%,transparent 46%)}
+.daychips{display:flex;gap:5px;flex-wrap:wrap}
+.daychips button{width:35px;height:35px;border-radius:50%;background:var(--bg2);font-family:'Baloo 2';font-weight:700;font-size:12.5px;color:var(--ink-soft)}
+.daychips button.on{background:var(--pink-deep);color:#fff}
+.edit-item{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.icon-btn{font-size:16px;padding:6px 9px;border-radius:12px;background:var(--bg2)}
+.sec-title{font-family:'Baloo 2';font-weight:700;font-size:16px;margin:18px 2px 8px;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+hr.dot{border:none;border-top:2px dotted var(--line);margin:14px 0}
+
+/* ---------- tabs ---------- */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:2px solid var(--line);display:flex;padding:8px 6px calc(10px + env(safe-area-inset-bottom))}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--ink-soft);font-family:'Baloo 2';font-weight:700;padding:4px;border-radius:16px}
+nav button .ic{font-size:21px;transition:transform .15s}
+nav button.sel{color:var(--pink-deep)}
+nav button.sel .ic{transform:translateY(-3px) scale(1.14)}
+nav button.sel::after{content:'';width:5px;height:5px;border-radius:50%;background:var(--pink-deep);margin-top:1px}
+
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-family:'Baloo 2';font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;white-space:nowrap}
+.toast.show{opacity:1}
+.overlay{position:fixed;inset:0;background:rgba(91,74,86,.45);z-index:40;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--paper);border-radius:24px;box-shadow:var(--shadow);padding:18px;width:100%;max-width:400px;max-height:82dvh;overflow-y:auto}
+.modal h3{margin-bottom:8px}
+.modal textarea{font-size:12px;min-height:120px;word-break:break-all}
+.empty{padding:30px 10px;text-align:center;color:var(--ink-soft);font-size:14px;line-height:1.7;font-weight:600}
+.empty .big{font-size:40px;display:block;margin-bottom:8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <div class="head-row">
+      <div>
+        <h1><span class="buddy">🌿</span> Bloom</h1>
+        <div class="sub" id="headSub"></div>
+      </div>
+      <div class="clock" id="clock">--:--</div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <nav id="nav">
+    <button data-tab="today"><span class="ic">☀️</span>Today</button>
+    <button data-tab="eval"><span class="ic">🌙</span>Reflect</button>
+    <button data-tab="history"><span class="ic">📖</span>Diary</button>
+    <button data-tab="settings"><span class="ic">🧸</span>Setup</button>
+  </nav>
+  <div class="toast" id="toast"></div>
+  <div id="modalRoot"></div>
+</div>
+
+<script>
+/* ================= storage ================= */
+const KEY='bloom:v1';
+let memFallback=null;
+const store={
+  async get(){
+    try{ const r=localStorage.getItem(KEY); if(r) return JSON.parse(r); }catch(e){}
+    try{ const r=await window.storage.get(KEY); return r?JSON.parse(r.value):null; }catch(e){ return memFallback; }
+  },
+  async set(v){
+    memFallback=v;
+    try{ localStorage.setItem(KEY, JSON.stringify(v)); return; }catch(e){}
+    try{ await window.storage.set(KEY, JSON.stringify(v)); }catch(e){}
+  }
+};
+let saveTimer=null;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>store.set(state),400); }
+
+/* ================= helpers ================= */
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS1=['S','M','T','W','T','F','S'];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pad=n=>String(n).padStart(2,'0');
+function dstr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayStr(){ return dstr(new Date()); }
+function yesterdayStr(){ const d=new Date(); d.setDate(d.getDate()-1); return dstr(d); }
+function prettyDate(s){ const [y,m,d]=s.split('-').map(Number); const dt=new Date(y,m-1,d); return DAYS[dt.getDay()]+', '+MONTHS[m-1]+' '+d; }
+function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function nowMin(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
+function toMin(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1700); }
+
+/* ================= default data ================= */
+function defaultData(){
+  return { groups:[
+    { id:uid(), name:'School days', emoji:'🎒', checkpoints:[
+      { id:uid(), name:'Before school', emoji:'🌅', time:'07:30', days:[1,2,3,4,5], items:[
+        {id:uid(),text:'Pack everything I need'},{id:uid(),text:'Eat breakfast'},{id:uid(),text:'Peek at today\'s timetable'},{id:uid(),text:'Phone charged?'} ]},
+      { id:uid(), name:'Back from school', emoji:'🏠', time:'16:00', days:[1,2,3,4,5], items:[
+        {id:uid(),text:'Wash hands & change clothes'},{id:uid(),text:'Check today\'s homework list'},{id:uid(),text:'Rest 30 min, then start'} ]},
+      { id:uid(), name:'Before academy', emoji:'✏️', time:'17:40', days:[1,3,5], items:[
+        {id:uid(),text:'Academy homework packed?'},{id:uid(),text:'Bring water bottle'} ]},
+      { id:uid(), name:'Night wind-down', emoji:'🌙', time:'22:00', days:[0,1,2,3,4,5,6], items:[
+        {id:uid(),text:'Pack tomorrow\'s bag tonight'},{id:uid(),text:'Set my alarm'},{id:uid(),text:'Open Reflect and review my day'} ]}
+      ], values:[
+        {id:uid(),emoji:'🍀',text:'Be honest, even when it\'s hard'},
+        {id:uid(),emoji:'🤝',text:'Keep the promises I make'},
+        {id:uid(),emoji:'💬',text:'Speak kindly, no snapping'},
+        {id:uid(),emoji:'📵',text:'Only 30 min of phone before bed'} ]},
+    { id:uid(), name:'Exam season', emoji:'🔥', checkpoints:[
+      { id:uid(), name:'Morning review', emoji:'☀️', time:'07:00', days:[1,2,3,4,5], items:[
+        {id:uid(),text:'5-min review of yesterday\'s memorizing'},{id:uid(),text:'Check today\'s study plan'} ]},
+      { id:uid(), name:'Night wrap-up', emoji:'🌙', time:'22:30', days:[0,1,2,3,4,5,6], items:[
+        {id:uid(),text:'Did I hit today\'s study goal?'},{id:uid(),text:'Pick tomorrow\'s study range'} ]}
+      ], values:[
+        {id:uid(),emoji:'🎯',text:'Stick to my study plan'},
+        {id:uid(),emoji:'📵',text:'Phone far away while studying'} ]},
+    { id:uid(), name:'Vacation', emoji:'🍉', checkpoints:[
+      { id:uid(), name:'Morning start', emoji:'🌞', time:'09:00', days:[0,1,2,3,4,5,6], items:[
+        {id:uid(),text:'Up before 10'},{id:uid(),text:'Make my bed'} ]}
+      ], values:[
+        {id:uid(),emoji:'🕰️',text:'Don\'t sleep the whole day away'} ]}
+  ], activeGroup:null, logs:{} };
+}
+
+/* ================= state ================= */
+let state=null;
+let view={ tab:'today', editingGroup:null, evalDate:null, openHistory:null };
+
+function activeGroup(){ return state.groups.find(g=>g.id===state.activeGroup)||state.groups[0]; }
+function log(date){ if(!state.logs[date]) state.logs[date]={checks:{},eval:{},diary:''}; return state.logs[date]; }
+function hasValues(){ const g=activeGroup(); return g&&g.values.length>0; }
+function cpStatus(cp,date){
+  const l=state.logs[date];
+  const checked=l&&l.checks[cp.id]?Object.values(l.checks[cp.id]).filter(Boolean).length:0;
+  const total=cp.items.length;
+  const done=total>0&&checked===total;
+  if(date!==todayStr()) return {key:done?'done':'past',label:done?'Done ✔':'Passed',checked,total,done};
+  const diff=toMin(cp.time)-nowMin();
+  if(done) return {key:'done',label:'Done ✔',checked,total,done};
+  if(Math.abs(diff)<=30) return {key:'now',label:'Check now!',checked,total,done};
+  if(diff>30) return {key:'soon',label:'Coming up',checked,total,done};
+  return {key:'past',label:'Passed',checked,total,done};
+}
+
+/* ================= render: today ================= */
+function renderToday(){
+  const g=activeGroup();
+  const date=todayStr();
+  const dow=new Date().getDay();
+  const cps=(g?g.checkpoints:[]).filter(c=>c.days.includes(dow)).sort((a,b)=>toMin(a.time)-toMin(b.time));
+  let html=`<div class="chip">${esc(g?g.emoji+' '+g.name:'No group')} · this week's plan</div><div style="height:12px"></div>`;
+
+  const h=new Date().getHours();
+  const yEval=state.logs[yesterdayStr()];
+  const yDone=yEval&&Object.keys(yEval.eval||{}).length>0;
+  const tEval=state.logs[date];
+  const tDone=tEval&&Object.keys(tEval.eval||{}).length>0;
+  if(h<12&&!yDone&&hasValues()){
+    html+=`<div class="card" style="background:#FFF7E0"><div class="row"><span style="font-size:24px">🌤️</span><div class="grow"><b class="disp">Yesterday's reflection is waiting!</b><div class="muted small">Mornings are a nice time to look back</div></div><button class="btn btn-primary" data-act="goEval" data-date="${yesterdayStr()}">Reflect</button></div></div>`;
+  }
+  if(h>=20&&!tDone&&hasValues()){
+    html+=`<div class="card" style="background:#F0EBFF"><div class="row"><span style="font-size:24px">🌙</span><div class="grow"><b class="disp">How was today?</b><div class="muted small">Check in with your values before bed</div></div><button class="btn btn-primary" data-act="goEval" data-date="${date}">Reflect</button></div></div>`;
+  }
+
+  if(cps.length===0){
+    html+=`<div class="card"><div class="empty"><span class="big">🧸</span>Nothing scheduled for ${DAYS[dow]}.<br>Add a time slot in the Setup tab!</div></div>`;
+  }
+  cps.forEach(cp=>{
+    const st=cpStatus(cp,date);
+    const l=log(date); if(!l.checks[cp.id]) l.checks[cp.id]={};
+    const pct=st.total?Math.round(st.checked/st.total*100):0;
+    html+=`<div class="card cp ${st.key==='now'?'now-glow':''}">
+      <div class="cp-head">
+        <div class="cp-emoji">${esc(cp.emoji)}</div>
+        <div><div class="cp-title">${esc(cp.name)}</div><div class="cp-time">🕐 ${esc(cp.time)} · check-in window ±30 min</div></div>
+        <span class="badge ${st.key}">${st.label}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="cp-body">
+        ${cp.items.map(it=>{
+          const on=!!l.checks[cp.id][it.id];
+          return `<div class="item ${on?'on':''}" data-act="check" data-cp="${cp.id}" data-item="${it.id}"><div class="box">${on?'✓':''}</div><div class="txt">${esc(it.text)}</div></div>`;
+        }).join('')}
+        <div class="meter"><div class="fill" style="width:${pct}%"></div><span class="walker" style="left:${pct}%">${pct===100?'⭐':'🌱'}</span></div>
+        <div class="muted small" style="margin-top:7px;text-align:right">${st.checked} / ${st.total} done</div>
+      </div>
+      ${st.done?'<div class="stamp">All done!</div>':''}
+    </div>`;
+  });
+  return html;
+}
+
+/* ================= render: eval ================= */
+function renderEval(){
+  const g=activeGroup();
+  if(!view.evalDate) view.evalDate=(new Date().getHours()<12)?yesterdayStr():todayStr();
+  const date=view.evalDate;
+  const l=log(date);
+  let html=`<div class="seg">
+    <button data-act="evalDate" data-date="${yesterdayStr()}" class="${date===yesterdayStr()?'sel':''}">Yesterday · ${prettyDate(yesterdayStr())}</button>
+    <button data-act="evalDate" data-date="${todayStr()}" class="${date===todayStr()?'sel':''}">Today · ${prettyDate(todayStr())}</button>
+  </div>`;
+  if(!g||g.values.length===0){
+    html+=`<div class="card"><div class="empty"><span class="big">🍀</span>No values set up yet.<br>Add your own in Setup → edit group!</div></div>`;
+    return html;
+  }
+  html+=`<div class="card"><h3 style="margin-bottom:4px">🧸 How did I do on ${prettyDate(date)}?</h3><div class="muted small" style="margin-bottom:12px">Be honest! Missing one is okay — knowing why matters more.</div>`;
+  g.values.forEach(v=>{
+    const e=l.eval[v.id]||{};
+    html+=`<div class="val-card">
+      <div class="val-top"><span style="font-size:20px">${esc(v.emoji)}</span><span class="val-name">${esc(v.text)}</span>
+        <div class="kb">
+          <button class="kept ${e.kept===true?'sel':''}" data-act="kept" data-val="${v.id}" data-v="1">😊 Kept it</button>
+          <button class="miss ${e.kept===false?'sel':''}" data-act="kept" data-val="${v.id}" data-v="0">😅 Missed</button>
+        </div>
+      </div>
+      ${e.kept===false?`<div class="val-note"><textarea data-act="note" data-val="${v.id}" placeholder="What happened? How did it slip? What could I try next time?">${esc(e.note||'')}</textarea></div>`:''}
+    </div>`;
+  });
+  html+=`<hr class="dot"><div class="sec-title" style="margin-top:0">📝 One-line diary</div>
+    <textarea data-act="diary" placeholder="Sum up your day in one line">${esc(l.diary||'')}</textarea>
+    <div style="height:10px"></div>
+    <button class="btn btn-mint" style="width:100%" data-act="saveEval">Save my reflection ✅</button></div>`;
+  return html;
+}
+
+/* ================= render: history ================= */
+function renderHistory(){
+  const g=activeGroup();
+  let html=`<div class="card"><h3 style="margin-bottom:10px">📖 Last 14 days</h3>`;
+  const rows=[];
+  for(let i=0;i<14;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=dstr(d); const l=state.logs[ds];
+    const dow=d.getDay();
+    const cps=(g?g.checkpoints:[]).filter(c=>c.days.includes(dow));
+    let checked=0,total=0;
+    cps.forEach(cp=>{ total+=cp.items.length; if(l&&l.checks[cp.id]) checked+=Object.values(l.checks[cp.id]).filter(Boolean).length; });
+    const evals=l?Object.values(l.eval||{}):[];
+    const kept=evals.filter(e=>e.kept===true).length;
+    const pct=total?Math.round(checked/total*100):0;
+    const open=view.openHistory===ds;
+    rows.push(`<div class="day-row" data-act="openDay" data-date="${ds}">
+      <b class="disp" style="width:92px;font-size:13px">${prettyDate(ds)}</b>
+      <div class="mini-bar"><i style="width:${pct}%"></i></div>
+      <span class="small muted" style="width:82px;text-align:right">${pct}% · 🍀 ${kept}/${evals.length||0}</span>
+    </div>${open?renderDayDetail(ds,g):''}`);
+  }
+  html+=rows.join('')+'</div>';
+  return html;
+}
+function renderDayDetail(ds,g){
+  const l=state.logs[ds];
+  if(!l) return `<div class="detail muted">No entries this day 🕊️</div>`;
+  let out='<div class="detail">';
+  const evalEntries=Object.entries(l.eval||{});
+  if(evalEntries.length){
+    out+='<b class="disp">🍀 Values</b><br>';
+    evalEntries.forEach(([vid,e])=>{
+      const v=(g?g.values:[]).find(x=>x.id===vid);
+      const name=v?v.emoji+' '+v.text:'(deleted value)';
+      out+=`${esc(name)} — ${e.kept?'😊 kept':'😅 missed'}${e.kept===false&&e.note?'<br><span class="muted">↳ '+esc(e.note)+'</span>':''}<br>`;
+    });
+  } else out+='<span class="muted">No reflection saved</span><br>';
+  if(l.diary) out+=`<br><b class="disp">📝 Diary</b><br>${esc(l.diary)}`;
+  return out+'</div>';
+}
+
+/* ================= render: settings ================= */
+function renderSettings(){
+  if(view.editingGroup) return renderGroupEditor();
+  let html=`<div class="muted small" style="margin:2px 4px 10px">Like alarm groups! Make a schedule for each season — school days, exam season, vacation — and switch anytime. Pick the one you're using now!</div>`;
+  state.groups.forEach(gr=>{
+    const on=activeGroup().id===gr.id;
+    html+=`<div class="card group-card">
+      <div class="radio ${on?'on':''}" data-act="useGroup" data-g="${gr.id}"></div>
+      <div class="g-emoji">${esc(gr.emoji)}</div>
+      <div class="grow" data-act="useGroup" data-g="${gr.id}">
+        <b class="disp">${esc(gr.name)}</b>
+        <div class="muted small">${gr.checkpoints.length} time slots · ${gr.values.length} values</div>
+      </div>
+      <button class="btn btn-soft" data-act="editGroup" data-g="${gr.id}">Edit</button>
+    </div>`;
+  });
+  html+=`<button class="btn btn-primary" style="width:100%" data-act="addGroup">+ New schedule group</button>
+  <div class="sec-title">💾 Backup</div>
+  <div class="card">
+    <div class="muted small" style="margin-bottom:10px">Save your setup & records as a file. If the app is ever deleted or updated, restore everything with one import.</div>
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn btn-soft grow" data-act="exportSettings">Export setup only</button>
+      <button class="btn btn-soft grow" data-act="exportAll">Export everything</button>
+    </div>
+    <button class="btn btn-mint" style="width:100%" data-act="importOpen">Import backup file</button>
+  </div>`;
+  return html;
+}
+
+function renderGroupEditor(){
+  const gr=state.groups.find(g=>g.id===view.editingGroup);
+  if(!gr){ view.editingGroup=null; return renderSettings(); }
+  let html=`<div class="row" style="margin-bottom:12px">
+    <button class="btn btn-soft" data-act="backSettings">← Back</button>
+    <b class="disp grow" style="font-size:17px;text-align:center">${esc(gr.emoji)} ${esc(gr.name)}</b>
+    <button class="btn btn-danger" data-act="delGroup" data-g="${gr.id}">Delete</button>
+  </div>
+  <div class="card">
+    <div class="row"><input data-act="gEmoji" data-g="${gr.id}" value="${esc(gr.emoji)}" style="width:64px;text-align:center" maxlength="4">
+    <input data-act="gName" data-g="${gr.id}" value="${esc(gr.name)}" placeholder="Group name (e.g. Exam season)"></div>
+  </div>
+
+  <div class="sec-title">⏰ Time-slot check-ups <span class="muted small">— pick days, repeats every week</span></div>`;
+  gr.checkpoints.sort((a,b)=>toMin(a.time)-toMin(b.time)).forEach(cp=>{
+    html+=`<div class="card">
+      <div class="row" style="margin-bottom:8px">
+        <input data-act="cpEmoji" data-g="${gr.id}" data-cp="${cp.id}" value="${esc(cp.emoji)}" style="width:58px;text-align:center" maxlength="4">
+        <input data-act="cpName" data-g="${gr.id}" data-cp="${cp.id}" value="${esc(cp.name)}" placeholder="Slot name (e.g. Before school)">
+        <input type="time" data-act="cpTime" data-g="${gr.id}" data-cp="${cp.id}" value="${esc(cp.time)}" style="width:104px">
+      </div>
+      <div class="daychips" style="margin-bottom:10px">${DAYS1.map((d,i)=>`<button class="${cp.days.includes(i)?'on':''}" data-act="cpDay" data-g="${gr.id}" data-cp="${cp.id}" data-day="${i}">${d}</button>`).join('')}</div>
+      ${cp.items.map(it=>`<div class="edit-item">
+        <input data-act="itemText" data-g="${gr.id}" data-cp="${cp.id}" data-item="${it.id}" value="${esc(it.text)}" placeholder="Something to check">
+        <button class="icon-btn" data-act="delItem" data-g="${gr.id}" data-cp="${cp.id}" data-item="${it.id}">🗑️</button>
+      </div>`).join('')}
+      <div class="row" style="margin-top:6px">
+        <button class="btn btn-soft grow" data-act="addItem" data-g="${gr.id}" data-cp="${cp.id}">+ Check item</button>
+        <button class="btn btn-danger" data-act="delCp" data-g="${gr.id}" data-cp="${cp.id}">Delete slot</button>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="btn btn-primary" style="width:100%" data-act="addCp" data-g="${gr.id}">+ Add time slot</button>
+
+  <div class="sec-title">🍀 My values for this season <span class="muted small">— write your own, reviewed nightly</span></div>
+  <div class="card">`;
+  gr.values.forEach(v=>{
+    html+=`<div class="edit-item">
+      <input data-act="valEmoji" data-g="${gr.id}" data-val="${v.id}" value="${esc(v.emoji)}" style="width:58px;text-align:center" maxlength="4">
+      <input data-act="valText" data-g="${gr.id}" data-val="${v.id}" value="${esc(v.text)}" placeholder="A value in my own words">
+      <button class="icon-btn" data-act="delVal" data-g="${gr.id}" data-val="${v.id}">🗑️</button>
+    </div>`;
+  });
+  html+=`<button class="btn btn-soft" style="width:100%;margin-top:6px" data-act="addVal" data-g="${gr.id}">+ Add a value</button></div>
+  <div style="height:8px"></div>
+  <button class="btn btn-mint" style="width:100%" data-act="backSettings">Save & go back ✅</button>`;
+  return html;
+}
+
+/* ================= main render ================= */
+function render(){
+  const main=document.getElementById('main');
+  document.getElementById('headSub').textContent=prettyDate(todayStr())+' · have a soft day ☁️';
+  let html='';
+  if(view.tab==='today') html=renderToday();
+  else if(view.tab==='eval') html=renderEval();
+  else if(view.tab==='history') html=renderHistory();
+  else html=renderSettings();
+  main.innerHTML=html;
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('sel',b.dataset.tab===view.tab));
+}
+
+/* ================= backup ================= */
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+function openModal(node){ const r=document.getElementById('modalRoot'); r.innerHTML=''; const ov=document.createElement('div'); ov.className='overlay'; ov.addEventListener('click',e=>{ if(e.target===ov) closeModal(); }); ov.appendChild(node); r.appendChild(ov); }
+function tryDownload(name,text){
+  try{
+    const b=new Blob([text],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+  }catch(e){}
+}
+function doExport(full){
+  const obj={app:'bloom',ver:1,type:full?'full':'settings',exported:new Date().toISOString(),groups:state.groups,activeGroup:state.activeGroup};
+  if(full) obj.logs=state.logs;
+  const text=JSON.stringify(obj,null,1);
+  const name='bloom-backup-'+(full?'full-':'setup-')+todayStr()+'.json';
+  tryDownload(name,text);
+  const m=document.createElement('div'); m.className='modal';
+  m.innerHTML=`<h3>💾 ${full?'Everything':'Setup only'} exported</h3>
+    <div class="muted small" style="margin-bottom:8px">A file <b>${esc(name)}</b> should be downloading. If not, copy the text below and save it anywhere safe (memo app, cloud, etc).</div>
+    <textarea readonly></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btn-primary grow" id="bkCopy">Copy text</button>
+      <button class="btn btn-soft" id="bkClose">Close</button>
+    </div>`;
+  m.querySelector('textarea').value=text;
+  m.querySelector('#bkCopy').addEventListener('click',async()=>{
+    const ta=m.querySelector('textarea');
+    try{ await navigator.clipboard.writeText(text); }catch(e){ ta.focus(); ta.select(); try{ document.execCommand('copy'); }catch(_){} }
+    toast('Copied! 📋');
+  });
+  m.querySelector('#bkClose').addEventListener('click',closeModal);
+  openModal(m);
+}
+function doImportOpen(){
+  const m=document.createElement('div'); m.className='modal';
+  m.innerHTML=`<h3>📂 Import backup</h3>
+    <div class="muted small" style="margin-bottom:8px">Pick your backup file, or paste the backup text below. A setup-only file restores schedules & values and keeps your current records. A full file also restores records.</div>
+    <input type="file" id="impFile" accept=".json,application/json,text/plain" style="margin-bottom:8px">
+    <textarea id="impText" placeholder="...or paste backup text here"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btn-mint grow" id="impGo">Restore</button>
+      <button class="btn btn-soft" id="impClose">Cancel</button>
+    </div>`;
+  m.querySelector('#impClose').addEventListener('click',closeModal);
+  m.querySelector('#impGo').addEventListener('click',async()=>{
+    let text=m.querySelector('#impText').value.trim();
+    const f=m.querySelector('#impFile').files[0];
+    if(f){ try{ text=await f.text(); }catch(e){ toast('Could not read that file 😢'); return; } }
+    if(!text){ toast('Pick a file or paste the text first!'); return; }
+    let obj; try{ obj=JSON.parse(text); }catch(e){ toast('That does not look like a Bloom backup 😢'); return; }
+    if(!obj||obj.app!=='bloom'||!Array.isArray(obj.groups)||obj.groups.length===0){ toast('That does not look like a Bloom backup 😢'); return; }
+    if(!confirm('Restore this backup? Your current schedule setup will be replaced'+(obj.logs?' and records will be merged in':'')+'.')) return;
+    state.groups=obj.groups;
+    state.activeGroup=obj.groups.find(g=>g.id===obj.activeGroup)?obj.activeGroup:obj.groups[0].id;
+    if(obj.logs&&typeof obj.logs==='object') state.logs={...state.logs,...obj.logs};
+    await store.set(state);
+    view.editingGroup=null; closeModal(); render();
+    toast('Backup restored! ✅');
+  });
+  openModal(m);
+}
+
+/* ================= events ================= */
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  view.tab=b.dataset.tab; view.openHistory=null; render();
+});
+
+document.getElementById('main').addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act;
+  if(act==='check'){
+    const l=log(todayStr());
+    if(!l.checks[el.dataset.cp]) l.checks[el.dataset.cp]={};
+    const cur=!!l.checks[el.dataset.cp][el.dataset.item];
+    l.checks[el.dataset.cp][el.dataset.item]=!cur;
+    save();
+    const g=activeGroup(); const cp=g.checkpoints.find(c=>c.id===el.dataset.cp);
+    const done=cp&&cp.items.length>0&&cp.items.every(it=>l.checks[cp.id][it.id]);
+    render();
+    if(done&&!cur) toast('⭐ "'+cp.name+'" all done!');
+  }
+  else if(act==='goEval'){ view.tab='eval'; view.evalDate=el.dataset.date; render(); }
+  else if(act==='evalDate'){ view.evalDate=el.dataset.date; render(); }
+  else if(act==='kept'){
+    const l=log(view.evalDate);
+    const cur=l.eval[el.dataset.val]||{};
+    cur.kept=el.dataset.v==='1';
+    if(cur.kept) cur.note='';
+    l.eval[el.dataset.val]=cur; save(); render();
+  }
+  else if(act==='saveEval'){ save(); toast('🍀 Reflection saved — good job today!'); }
+  else if(act==='exportAll'){ doExport(true); }
+  else if(act==='exportSettings'){ doExport(false); }
+  else if(act==='importOpen'){ doImportOpen(); }
+  else if(act==='openDay'){ view.openHistory=(view.openHistory===el.dataset.date)?null:el.dataset.date; render(); }
+  else if(act==='useGroup'){ state.activeGroup=el.dataset.g; save(); render(); toast('Schedule switched ✅'); }
+  else if(act==='editGroup'){ view.editingGroup=el.dataset.g; render(); }
+  else if(act==='backSettings'){ view.editingGroup=null; save(); render(); }
+  else if(act==='addGroup'){
+    const g={id:uid(),name:'New schedule',emoji:'🗓️',checkpoints:[],values:[]};
+    state.groups.push(g); view.editingGroup=g.id; save(); render();
+  }
+  else if(act==='delGroup'){
+    if(state.groups.length<=1){ toast('You need at least one group!'); return; }
+    if(!confirm('Delete this group? Its schedule setup will be gone.')) return;
+    state.groups=state.groups.filter(g=>g.id!==el.dataset.g);
+    if(state.activeGroup===el.dataset.g) state.activeGroup=state.groups[0].id;
+    view.editingGroup=null; save(); render();
+  }
+  else if(act==='addCp'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    g.checkpoints.push({id:uid(),name:'New time slot',emoji:'⏰',time:'08:00',days:[1,2,3,4,5],items:[{id:uid(),text:''}]});
+    save(); render();
+  }
+  else if(act==='delCp'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    if(!confirm('Delete this time slot?')) return;
+    g.checkpoints=g.checkpoints.filter(c=>c.id!==el.dataset.cp); save(); render();
+  }
+  else if(act==='cpDay'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    const cp=g.checkpoints.find(c=>c.id===el.dataset.cp);
+    const d=Number(el.dataset.day);
+    cp.days=cp.days.includes(d)?cp.days.filter(x=>x!==d):[...cp.days,d].sort();
+    save(); render();
+  }
+  else if(act==='addItem'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    const cp=g.checkpoints.find(c=>c.id===el.dataset.cp);
+    cp.items.push({id:uid(),text:''}); save(); render();
+  }
+  else if(act==='delItem'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    const cp=g.checkpoints.find(c=>c.id===el.dataset.cp);
+    cp.items=cp.items.filter(i=>i.id!==el.dataset.item); save(); render();
+  }
+  else if(act==='addVal'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    g.values.push({id:uid(),emoji:'🍀',text:''}); save(); render();
+  }
+  else if(act==='delVal'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    g.values=g.values.filter(v=>v.id!==el.dataset.val); save(); render();
+  }
+});
+
+/* text inputs: update state without rerender (keeps typing focus) */
+document.getElementById('main').addEventListener('input',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act;
+  const g=el.dataset.g?state.groups.find(x=>x.id===el.dataset.g):null;
+  if(act==='note'){ const l=log(view.evalDate); const cur=l.eval[el.dataset.val]||{kept:false}; cur.note=el.value; l.eval[el.dataset.val]=cur; save(); }
+  else if(act==='diary'){ log(view.evalDate).diary=el.value; save(); }
+  else if(act==='gName'){ g.name=el.value; save(); }
+  else if(act==='gEmoji'){ g.emoji=el.value; save(); }
+  else if(act==='cpName'){ g.checkpoints.find(c=>c.id===el.dataset.cp).name=el.value; save(); }
+  else if(act==='cpEmoji'){ g.checkpoints.find(c=>c.id===el.dataset.cp).emoji=el.value; save(); }
+  else if(act==='itemText'){ g.checkpoints.find(c=>c.id===el.dataset.cp).items.find(i=>i.id===el.dataset.item).text=el.value; save(); }
+  else if(act==='valText'){ g.values.find(v=>v.id===el.dataset.val).text=el.value; save(); }
+  else if(act==='valEmoji'){ g.values.find(v=>v.id===el.dataset.val).emoji=el.value; save(); }
+});
+document.getElementById('main').addEventListener('change',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  if(el.dataset.act==='cpTime'){
+    const g=state.groups.find(x=>x.id===el.dataset.g);
+    g.checkpoints.find(c=>c.id===el.dataset.cp).time=el.value||'08:00';
+    save(); render();
+  }
+});
+
+/* ================= clock ================= */
+function tickClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=pad(n.getHours())+':'+pad(n.getMinutes());
+}
+setInterval(()=>{ tickClock(); if(view.tab==='today') render(); },60000);
+
+/* ================= init ================= */
+(async function(){
+  const loaded=await store.get();
+  if(loaded&&loaded.groups){ state=loaded; }
+  else { state=defaultData(); }
+  if(!state.activeGroup||!state.groups.find(g=>g.id===state.activeGroup)) state.activeGroup=state.groups[0].id;
+  await store.set(state);
+  tickClock();
+  render();
+})();
+</script>
+</body>
+</html>
